@@ -9,10 +9,12 @@ import logging
 
 
 if len(sys.argv)!=2:
-	print 'Usage: python test_word_embeddings.py <input_vector_file>'
+	print 'Usage: python test_word_embeddings.py <input_vector_file> '
 	print 'input_vector_file: The pre-computed word embedding file'
 	sys.exit()
 
+
+output_location = "/Users/ankit/Documents/cliqz/query_embeddings/output_data/"
 ## Load All the Data / Query / Page Models
 original_query_list_file = os.path.join(output_location, "original_query_list.pkl")
 expected_result_list_file = os.path.join(output_location,"expected_result_list.pkl")
