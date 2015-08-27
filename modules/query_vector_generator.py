@@ -52,7 +52,7 @@ for line_tmp in corpus:
 		if one_word in  vocab_dict:
 			indexnum = vocab_dict.get(one_word)
 			sentencevectortemp.append(repvector[indexnum])
-		else
+		else:
 			sentencevectortemp.append([float(0)] * vector_size)
 	
 	l = numpy.array(sentencevectortemp)

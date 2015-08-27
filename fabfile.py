@@ -28,7 +28,7 @@ def full_install(host_details=None):
         'gunicorn==18.0',
         'requests==1.2.3',
         'mrjob==0.4.5',
-	'msgpack',
+	'msgpack-python',
 	'cython',
 	'joblib',
 	'scikit-learn'
