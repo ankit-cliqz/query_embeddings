@@ -37,8 +37,6 @@ vectorsfilepath = sys.argv[1]
 
 # Load Global Variables
 vector_size = int(100)
-vocab_dict, repvector = get_raw_word_embeddings(vectorsfilepath)
-
 
 # Raw Vector File
 def get_raw_word_embeddings(vectorsfilepath):
@@ -53,6 +51,8 @@ def get_raw_word_embeddings(vectorsfilepath):
 	p.close()
 	vocab_dict = {v:i for i,v in enumerate(vocab)}
 	return vocab_dict, repvector
+
+vocab_dict, repvector = get_raw_word_embeddings(vectorsfilepath)
 
 # Returns a numpy array which represents the query in word embedding vector form.
 # Internally computes the centroid for the query vector. Idea is that the query vector is represented by 
