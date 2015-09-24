@@ -33,7 +33,7 @@ tokens = []
 sentencevectortemp = []
 sentencevector = []
 corpusvector = []
-numJobs = 15
+numJobs = 2
 
 # Size of Vector {Default: W2V=100, Poly=64, Glove=50}
 print "\nStarting Caching of the Word Embedding Vector File in Memory..."
@@ -82,7 +82,7 @@ def generateQueryAndQueryVectorMap(line_tmp):
 
 # Parallization Code
 # Initiating Parallel jobs for compute intensive task of generating sentence vectors.
-results = Parallel(n_jobs=numJobs)(delayed(generateQueryAndQueryVectorMap)(line_tmp) \
+results = Parallel(n_jobs=numJobs, verbose=10000)(delayed(generateQueryAndQueryVectorMap)(line_tmp) \
                                    for line_tmp in corpus)
 # Aggregate the results into the query_queryvector_map dict.
 for indiv_res in results:

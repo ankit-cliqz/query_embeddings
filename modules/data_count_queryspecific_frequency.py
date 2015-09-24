@@ -1,0 +1,173 @@
+#!/usr/local/bin/python
+# -*- coding: utf-8 -*-
+
+
+# This script is used to process the er_gc.mpack query log data
+# The script stores all the requisite queries and query-page model on the disk.
+# @uthor: Ankit Bahuguna
+# @email: ankit@cliqz.com
+
+import msgpack
+import sys
+import json
+import joblib
+import os
+
+'''
+# Command Line Arguments - Uncomment this, if you want to use this as an independent customized command line script. 
+
+if len(sys.argv)!=3:
+    print '\nUsage: data_count.py <querydata_input_file> <output_directory>'
+    print '\nquerydata_input_file: Query data input file, in .mpack format' 
+    print '\noutput_directory: Output directory to store all processed data as .pkl files.' 
+    sys.exit()
+'''
+
+query_data_filename = "/ebs/data/er_gc.mpack"
+output_location = "/ebs/output_data_new/"
+outputfile_path = "/ebs/output_data_new/query_url_frequency.txt"
+
+original_query_list_file = os.path.join(output_location, "original_query_list.pkl")
+expected_result_list_file = os.path.join(output_location, "expected_result_list.pkl")
+originalquery_exresult_file = os.path.join(output_location, "originalquery_exresult.pkl")
+queries_returned_list_file = os.path.join(output_location, "queries_returned_list.pkl")
+originalquery_queriesreturnedlist_map_file = os.path.join(output_location, "originalquery_queriesreturnedlist_map100.pkl")
+original_query_puc_list_file = os.path.join(output_location, "original_query_puc_list.pkl")
+url_query_map_file = os.path.join(output_location, "url_query_map.pkl")
+xyz_file = os.path.join(output_location, "queryurl_frequencydict.pkl")
+
+original_query_list = []  # Simple List of Query Strings
+expected_result_list = []  # List of List of Expected Results
+originalquery_exresult = {}  # Mapping of the queries with the expected result list (urls) <String , List[]>
+queries_returned_list = []  # List of all the queries returned by the Big Machine
+original_query_puc_list = {}  # Mapping of original queries with the expected list of urls
+url_query_map = {}  # Mapping of the PUC URL (Page) as key and the list of queries which leads to that page.
+originalquery_queriesreturnedlist_map = {}
+
+xyz = {}
+
+
+fh = open(outputfile_path, 'a')
+
+
+itemcount = 0
+unpacker = msgpack.Unpacker(open(query_data_filename, 'r'))
+
+for query_record in unpacker:
+    itemcount += 1
+    #if (itemcount == 101):
+    #    break
+    print "Currently processing record: " + str(itemcount)+" out of 19K Records"
+    record_json_dump = json.dumps(query_record)
+    single_record = json.loads(record_json_dump)
+
+    # Original Query 
+    query_original = single_record["query"]
+    #print "[original_query]\t"+str(query_original)
+    #original_query_list.append(query_original)
+
+    # Expected result returned by the system. 
+    expected_result = single_record["ex"]
+    ex_res_count = 0
+    #indiv_expected_result = []
+    for ex in expected_result:
+        # print "[expected_result]("+str(ex_res_count)+")\t"+str(ex.encode("utf-8"))
+        #indiv_expected_result.append(ex.encode("utf-8"))
+        ex_res_count = ex_res_count + 1
+    #expected_result_list.append(indiv_expected_result)
+
+    # Maps the original query to all its expected results
+    #originalquery_exresult[str(query_original)] = indiv_expected_result
+
+    puc_url_list = []
+    # Iterate over the keys to get all the keys (URL) associated with the given query.
+    indiv_query = []
+
+
+    for key in single_record["ex_data"].keys():
+        url = str(key.encode("utf-8"))
+        # print "URL: "+ url
+        puc_url_list.append(url)
+        #indiv_query = []
+        if not (single_record["ex_data"].get(key) is None):
+            list3 = single_record["ex_data"].get(key)
+            if not list3 is None:
+                ucrawl_queries = list3["info"]["tq"]["ucrawl"]
+                qs_queries = list3["info"]["tq"]["qs"]
+                qc_queries = list3["info"]["tq"]["qc"]
+                if not ucrawl_queries is None:
+                    for q_ucrawl in ucrawl_queries:
+                        print(len(q_ucrawl))
+                        for tr_ucrawl in q_ucrawl:
+                            query_temp0 = ""
+                            query_freq0 = ""
+                            if (isinstance(tr_ucrawl, int)):
+                                query_freq0 = tr_ucrawl
+                                continue
+                            else:
+                                # print str("[ucrawl]\t")+tr.encode("utf-8")
+                                #queries_returned_list.append(tr_ucrawl.encode("utf-8"))
+                                query_temp0 = tr_ucrawl.encode("utf-8")
+                                #indiv_query.append(tr_ucrawl.encode("utf-8"))
+                            #xyz[(query_temp, url)] = (int(query_freq), "ucrawl")
+                            print (query_temp0+"\t"+url+"\t"+str(query_freq0)+"\t"+"ucrawl"+"\n")
+                            #fh.write(query_temp+"\t"+url+"\t"+str(query_freq)+"\t"+"ucrawl"+"\n")
+                if not qc_queries is None:
+                    for q_qc in qc_queries:
+                        print(len(q_qc))
+                        for tr_qc in q_qc:
+                            query_temp1 = ""
+                            query_freq1 = ""
+                            if (isinstance(tr_qc, int)):
+                                query_freq1 =  tr_qc
+                                continue
+                            else:
+                                # print str("[qc]\t")+tr.encode("utf-8")
+                                #queries_returned_list.append(tr_qc.encode("utf-8"))
+                                #indiv_query.append(tr_qc.encode("utf-8"))
+                                query_temp1 = tr_qc.encode("utf-8")
+                            #xyz[(query_temp, url)] = (int(query_freq),"census")
+                            print(query_temp1+"\t"+url+"\t"+str(query_freq1)+"\t"+"census"+"\n")
+                            #fh.write(query_temp+"\t"+url+"\t"+str(query_freq)+"\t"+"census"+"\n")
+
+                if not qs_queries is None:
+                    for q_qs in qs_queries:
+                        print(len(q_qs))
+                        for tr_qs in q_qs:
+                            query_temp2 = ""
+                            query_freq2 = ""
+                            if (isinstance(tr_qs, int)):
+                                query_freq2 = tr_qs
+                                continue
+                            else:
+                                # print str("[qs]\t")+tr.encode("utf-8")
+                                #queries_returned_list.append(tr_qs.encode("utf-8"))
+                                #indiv_query.append(tr_qs.encode("utf-8"))
+                                query_temp2 = tr_qs.encode("utf-8")
+                            #xyz[(query_temp, url)] = int(query_freq), ("similar")
+                            print(query_temp2+"\t"+url+"\t"+str(query_freq2)+"\t"+"similar"+"\n")
+                            #fh.write(query_temp+"\t"+url+"\t"+str(query_freq)+"\t"+"similar"+"\n")
+        #url_query_map[url] = indiv_query
+    #print "[ "+query_original+" ]: "
+    #for qrtmp in indiv_query:
+    #    print qrtmp
+    #sys.exit()
+    #originalquery_queriesreturnedlist_map[query_original] = indiv_query
+    #original_query_puc_list[query_original] = puc_url_list
+print "All records processed. Currently writing to disk!"
+
+# JobLib Dump to Disk
+'''
+joblib.dump(original_query_list, original_query_list_file)
+joblib.dump(expected_result_list, expected_result_list_file)
+joblib.dump(originalquery_exresult, originalquery_exresult_file)
+joblib.dump(queries_returned_list, queries_returned_list_file)
+joblib.dump(original_query_puc_list, original_query_puc_list_file)
+joblib.dump(url_query_map, url_query_map_file)
+'''
+
+#joblib.dump(originalquery_queriesreturnedlist_map, originalquery_queriesreturnedlist_map_file)
+
+#joblib.dump(xyz ,xyz_file)
+fh.close()
+print "All data written to disk!"

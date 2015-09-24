@@ -22,7 +22,7 @@ def full_install(host_details=None):
     #pkg = cliqz.package.gen_definition()
     #local("tar cjf {} modules".format(pkg['local']))
     
-    cliqz.cli.system_package('python-pip', 'gcc', 'make','build-essential','python-setuptools','libatlas-dev','libatlas3gf-base', 'python-dev','python-numpy', 'python-scipy', 'python-pandas', 'python-sympy', 'python-nose')
+    cliqz.cli.system_package('python-pip', 'gcc', 'make','build-essential','python-setuptools','libatlas-dev','libatlas3gf-base', 'python-dev','python-numpy', 'python-scipy', 'python-pandas', 'python-sympy', 'python-nose','redis-server','libxslt1-dev', 'libxslt1.1', 'libxml2-dev libxml2' ,'libssl-dev')
     cliqz.cli.python_package(
         'pyyaml',
         'gunicorn==18.0',
@@ -31,8 +31,10 @@ def full_install(host_details=None):
 	'msgpack-python',
 	'cython',
 	'joblib',
-	'scikit-learn'
-	
+	'scikit-learn',
+	'redis',
+	'lockfile',
+	'lxml'
     )
     
     #cliqz.package.install(pkg, '/opt/' + app_name)
@@ -72,7 +74,7 @@ cliqz.setup(
                 'ebs_size': 128,
                 'ebs_type': 'gp2',
                 'num_instances': 1,
-                'instance_type': 'c3.8xlarge',
+                'instance_type': 'r3.8xlarge',
                 'placement': 'us-east-1a',
             },
         ],
