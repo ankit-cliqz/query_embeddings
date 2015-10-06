@@ -2,8 +2,8 @@ __author__ = 'ankit'
 
 import os
 
-directory_path = "/ebs/data/de_wiki/result/"
-outputfile_path = "/ebs/data/de_wiki/result_cleancorpus.txt"
+directory_path = "/ebs/data/en_wiki/extracted/"
+outputfile_path = "/ebs/data/en_wiki/en_wiki.txt"
 
 fh = open(outputfile_path, 'a')
 directoryCount = 1

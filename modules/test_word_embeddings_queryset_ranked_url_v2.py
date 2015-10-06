@@ -209,6 +209,11 @@ def getRankedAssociatedPagesWithQuery(query_string):
     associated_url_scores = []
     similar_query_list, similar_query_cosinedistance_list = getTopTenSimilarQueries(query_string)
 
+    print "\nSimilar Queries\n====================="
+    for simquery in similar_query_list:
+        print str(simquery)+"\n"
+
+
     for url, query_list in url_query_map.iteritems():
         # Lower case all the Queries in the Query List
         [x.lower() for x in query_list]
@@ -216,14 +221,12 @@ def getRankedAssociatedPagesWithQuery(query_string):
         query_list_set = set(query_list)
         for indiv_query in similar_query_list:
             if indiv_query in query_list_set:
-
                 # Perfrom a Lookup here for the Frequency
                 frequency, source = queryurl_frequencydict.get((indiv_query, url))
                 #print  str(indiv_query) + " : " + str(url) + " : " + str(source) + " : " + str(frequency)
 
                 if (keep_census_urls == "true" or (
                         keep_census_urls == "false" and (source == "ucrawl" or source == "similar"))):
-                    #print "Condition Checked!"
                     # Multiply the Log of the frequency of counts with the cosine distance for the query
                     cosine_distance = similar_query_cosinedistance_list[similar_query_list.index(indiv_query)]
                     query_similarity_score = math.log(float(frequency)) * float(cosine_distance)
@@ -244,6 +247,15 @@ def checkReturnedListWithExpectedResults(query_string):
     associated_urls = getRankedAssociatedPagesWithQuery(query_string)
     expected_result_list_query = originalquery_exresult.get(query_string)
     # print "Associated URL Size:" +str(len(associated_urls))
+
+    print "\nExpected Result(s)\n========================="
+    for expectedresult in expected_result_list_query:
+        print str(expectedresult)+"\n"
+
+    print "Associated Ranked Result(s)\n========================="
+    for urls_assos in associated_urls:
+        print str(urls_assos)+"\n"
+    print "\n"
     for url in associated_urls:
         if url in expected_result_list_query:
             return True;
@@ -259,12 +271,17 @@ def main():
     count = 0
     correct_match = 0
     for original_query in original_query_list[:num_test_queries]:
-        # print "Original Query: "+str(original_query)
         count = count + 1
+        print "###"+str(count)+" Original Query: "+str(original_query)
+
         boolvalue = checkReturnedListWithExpectedResults(original_query)
         if (boolvalue == True):
             correct_match = correct_match + 1
         print "Completed " + str(count) + " out of 100. Accuracy %: " + str(float(correct_match) * 100 / float(count))
+        #sys.stdout.write("\rCompleted %d  out of 100. Accuracy Percent %f " % (int(count), float(correct_match) * 100 / float(count)))
+        #sys.stdout.flush()
+    print ''
+
     print  "\n\nFinal Scores"
     print "=============="
     print "Total Original Queries:" + str(count)

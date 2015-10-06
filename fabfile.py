@@ -34,7 +34,8 @@ def full_install(host_details=None):
 	'scikit-learn',
 	'redis',
 	'lockfile',
-	'lxml'
+	'lxml',
+	'mpmath'
     )
     
     #cliqz.package.install(pkg, '/opt/' + app_name)
