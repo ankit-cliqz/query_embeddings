@@ -57,7 +57,7 @@ def main():
 
     vectorsfilepath = sys.argv[1]
     vector_size = 100
-    vocab_dict, repvector = get_raw_word_embeddings(vectorsfilepath,vector_size )
+    vocab_dict, repvector = get_raw_word_embeddings(vectorsfilepath,vector_size)
 
 
     print "\nQuery Vector Cosine Distance Calculator"

@@ -22,7 +22,7 @@ def full_install(host_details=None):
     #pkg = cliqz.package.gen_definition()
     #local("tar cjf {} modules".format(pkg['local']))
     
-    cliqz.cli.system_package('python-pip', 'gcc', 'make','build-essential','python-setuptools','libatlas-dev','libatlas3gf-base', 'python-dev','python-numpy', 'python-scipy', 'python-pandas', 'python-sympy', 'python-nose','redis-server','libxslt1-dev', 'libxslt1.1', 'libxml2-dev libxml2' ,'libssl-dev')
+    cliqz.cli.system_package('python-pip', 'gcc', 'make','build-essential','python-setuptools','libatlas-dev','libatlas3gf-base', 'python-dev','python-numpy', 'python-scipy', 'python-pandas', 'python-sympy', 'python-nose','redis-server','libxslt1-dev', 'libxslt1.1', 'libxml2-dev libxml2' ,'libssl-dev','s3cmd')
     cliqz.cli.python_package(
         'pyyaml',
         'gunicorn==18.0',
