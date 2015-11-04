@@ -75,13 +75,14 @@ def main():
         cosdistance = computeCosineDistance(query1vec,query2vec)
         print "Cosine Distance: " +str(cosdistance)
 
-        user_input = raw_input("\nDo you wish to continue again? (Type 'yes' to continue): ")
-        if user_input == "yes":
+        user_input = raw_input("\nDo you wish to continue again? (Type 'no' to quit): ")
+        if user_input == "no":
+            print "\nGoodbye!"
+            break
+        else:
             print "\n"
             continue
-        else:
-            print "Good Bye!"
-            break
+
 
 if __name__ == "__main__":
     main()
