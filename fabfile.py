@@ -75,7 +75,7 @@ cliqz.setup(
                 'ebs_size': 128,
                 'ebs_type': 'gp2',
                 'num_instances': 1,
-                'instance_type': 'r3.8xlarge',
+                'instance_type': 'c4.8xlarge',
                 'placement': 'us-east-1a',
             },
         ],
