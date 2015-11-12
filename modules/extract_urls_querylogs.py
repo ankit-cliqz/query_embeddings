@@ -2,6 +2,9 @@ __author__ = 'ankit'
 import sys
 import json
 import requests
+import gevent
+from gevent import monkey
+monkey.patch_all()
 
 itemcount =0
 
@@ -30,27 +33,33 @@ def print_all_info(url):
                 print itemucrawl[0]
         '''
 
-
+        flag = False
         # Title and Description
         if (not response_json["snippets"] == "no snippet info"):
             if (not response_json.get("snippets") is None) and (
             not response_json["snippets"].get("language") is None):
+                language_dict  = response_json["snippets"]["language"]
+                for language, score in language_dict.iteritems():
+                    if (language.encode("utf-8")=="de" or language.encode("utf-8") =="en"):
+                        flag =True
+                        print "Language: "+str(language.encode("utf-8"))
+                        break
 
-
-            if (not response_json.get("snippets") is None) and (
-            not response_json["snippets"].get("snippet") is None) and (
-            not response_json["snippets"]["snippet"].get("title") is None):
-                title = response_json["snippets"]["snippet"]["title"].encode("utf-8")
-                print "Title: " + str(title)
-            if (not response_json.get("snippets") is None) and (
-            not response_json["snippets"].get("snippet") is None) and (
-            not response_json["snippets"]["snippet"].get("desc") is None):
-                desc = response_json["snippets"]["snippet"]["desc"].encode("utf-8")
-                print "Description: " + str(desc)
+                if (flag==True):
+                    if (not response_json.get("snippets") is None) and (
+                    not response_json["snippets"].get("snippet") is None) and (
+                    not response_json["snippets"]["snippet"].get("title") is None):
+                        title = response_json["snippets"]["snippet"]["title"].encode("utf-8")
+                        print "Title: " + str(title)
+                    if (not response_json.get("snippets") is None) and (
+                    not response_json["snippets"].get("snippet") is None) and (
+                    not response_json["snippets"]["snippet"].get("desc") is None):
+                        desc = response_json["snippets"]["snippet"]["desc"].encode("utf-8")
+                        print "Description: " + str(desc)
 
 
 # Extract URL FROM Query Logs
-with open("/Users/ankit/Desktop/part-00000") as filehandle:
+with open("/ebsnew/part-00000") as filehandle:
     for query_record in filehandle:
         itemcount += 1
         if itemcount == 2000:
