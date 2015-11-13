@@ -16,6 +16,7 @@ bucket_name = 'cliqz-data-pipeline'
 
 fwrite = open("/ebsnew/page_info_data/title_and_desc.txt", "a")
 def print_all_info(url):
+    response = requests.get("http://10.10.24.254/api/info-page?url=" + url, auth=('cliqz', 'cliqz-245'))
     response_json = json.loads(response.text.decode("utf-8"))
     if not response_json["info"] == "not in index":
         #print "\nURL : " + url
@@ -100,7 +101,6 @@ for l in bucket_list:
                 if not url.endswith("/"):
                     url = url+"/"
                 print_all_info(url)
-                #fwrite.write("\n")
         filehandle.close()
 
         ## File Processed ##
