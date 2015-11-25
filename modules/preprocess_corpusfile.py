@@ -6,6 +6,9 @@ import re
 from mapreduce.process_html_data import ProcessHTMLContent
 import string
 import json
+import multiprocessing
+from textwrap import dedent
+from itertools import izip_longest
 
 removelist = "\n. äöüß€"
 rgx = re.compile('[^\w'+removelist+']', re.UNICODE)
@@ -13,12 +16,13 @@ multiple_dots_pattern = re.compile(r'(\.+)')
 multiple_space_pattern = re.compile(r'(\s+)')
 invalid_escape = re.compile(r'\\[0-7]{1,3}')  # up to 3 digits for byte values up to FF
 
-if len(sys.argv) != 3:
-    print 'Usage: python preprocess_corpusfile.py <input_file> <output_file>'
+if len(sys.argv) != 4:
+    print 'Usage: python preprocess_corpusfile.py <input_file> <output_file> <num_processes>'
     sys.exit()
 
 inputfilepath = sys.argv[1]
 outputfilepath = sys.argv[2]
+num_processes = int(sys.argv[3])
 fw = open(outputfilepath, 'a')
 count =0
 
@@ -35,6 +39,10 @@ def repair(line):
     line.replace("\\u","u").replace("\u","u")
     return line
 
+def grouper(n, iterable, padvalue=None):
+	"""grouper(3, 'abcdefg', 'x') -->
+	('a','b','c'), ('d','e','f'), ('g','x','x')"""
+	return izip_longest(*[iter(iterable)]*n, fillvalue=padvalue)
 
 
 
@@ -60,24 +68,31 @@ def preprocess_line(line):
     return line+"\n"
 
 linecount = 0
+
+inputdata_list= []
 with open(inputfilepath) as fo, open("errorlog.txt", "w") as logw:
     for line in fo:
         linecount +=1
         #print linecount
         if not line.strip() == "":
-            #print "Initial: "+line
-            #repaired_json = repair(line)
-            #print "Repaired Json: "+repaired_json
-            try:
-                line_pre =  preprocess_line(line.strip().decode('utf-8'))
-                #print "Final: "+str(line_pre.encode("utf-8"))
-                fw.write(line_pre.encode("utf-8"))
-            except:
-                fault = line.strip().decode('utf-8')+"\n"
-                logw.write(fault.encode("utf-8"))
-                pass
+            inputdata_list.append(line.strip().decode('utf-8'))
 
-print "Input text file pre-processing is complete!"
+    #print "Initial: "+line
+    #repaired_json = repair(line)
+    #print "Repaired Json: "+repaired_json
+# Create pool (p)
+p = multiprocessing.Pool(num_processes)
+print "\nNumber of Processes: "+str(num_processes)
+
+for chunk in grouper(1000, inputdata_list):
+    try:
+        results = p.map(preprocess_line, chunk)
+        for r in results:
+            fw.write(r.encode("utf-8"))
+    except:
+        pass
+
+print "\nInput text file pre-processing is complete!"
 fo.close()
 fw.close()
 logw.close()
