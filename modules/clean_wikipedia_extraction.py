@@ -2,12 +2,14 @@ __author__ = 'ankit'
 
 import os
 
-directory_path = "/ebs/data/en_wiki/extracted/"
-outputfile_path = "/ebs/data/en_wiki/en_wiki.txt"
+#directory_path = "/ebs/data/en_wiki/extracted/"
+outputfile_path = "/ebsnew/data/wikipedia_nov23/de_wiki/de_wiki.txt"
 
 fh = open(outputfile_path, 'a')
-directoryCount = 1
 
+'''
+# Uncomment for Directory Level Execution
+directoryCount = 1
 for root, dirs, files in os.walk(directory_path):
     print "Directory Count: " + str(directoryCount)
     path = root.split('/')
@@ -27,4 +29,13 @@ for root, dirs, files in os.walk(directory_path):
                         fh.write(str(tmp))
             f1.close()
     directoryCount+=1
+fh.close()
+'''
+wiki_file_fullpath = "/ebsnew/data/wikipedia_nov23/de_wiki/text.xml"
+with open(wiki_file_fullpath) as f1:
+    for tmp in f1:
+        if not (tmp.startswith("<doc id=") or tmp.startswith("</doc>") or tmp.startswith("\n")):
+            # Open a file handle to the lock file
+            fh.write(str(tmp))
+f1.close()
 fh.close()
