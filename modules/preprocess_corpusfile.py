@@ -17,7 +17,7 @@ multiple_dots_pattern = re.compile(r'(\.+)')
 multiple_space_pattern = re.compile(r'(\s+)')
 invalid_escape = re.compile(r'\\[0-7]{1,3}')  # up to 3 digits for byte values up to FF
 
-if len(sys.argv) != 4:
+if len(sys.argv) != 5:
     print 'Usage: python preprocess_corpusfile.py <input_file> <output_file> <num_processes> <num_file_chunks>'
     sys.exit()
 
@@ -158,6 +158,7 @@ for chunk_number in range(num_chunks):
 
     p = multiprocessing.Pool(num_processes)
     for chunk in grouper(1000, inputdata_list):
+        print "chunk: "+str(chunk)
         try:
             results = p.map(preprocess_line, chunk)
             for r in results:
