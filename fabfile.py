@@ -65,17 +65,19 @@ cliqz.setup(
     policies=[],
     cluster={
         'primary_install': full_install,
-        'vpc_id': 'vpc-f0733595',
-        'name': app_name,
+        #'vpc_id': 'vpc-f0733595',
+	'use_vpc': True,
+	'name': app_name,
         'image': 'ubuntu-14.04-64bit',
         'instances': [
             {
                 'price_zone': 'c1',
                 'spot_price': 1.5,
-                'ebs_size': 128,
+		'root_device_size': 20,
+		'ebs_size': 128,
                 'ebs_type': 'gp2',
                 'num_instances': 1,
-                'instance_type': 'c4.8xlarge',
+                'instance_type': 'g2.2xlarge',
                 'placement': 'us-east-1a',
             },
         ],
